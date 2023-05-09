@@ -77,43 +77,21 @@ const menu = [
     category: "dinner",
     price: 39.99,
     img: "./images/item-10.jpeg",
-    desc: `Robert Burneika loves it!.`,
+    desc: `Robert Burneika loves it!. lorem solorem lorem soloremlorem soloremlorem soloremlorem solorem`,
   },
 ];
 const sectionCenter = document.querySelector(".section-center");
-const filterBtns = document.querySelectorAll(".filter-btn");
+const btnContainer = document.querySelector(".btn-container");
 
 window.addEventListener("DOMContentLoaded", () => {
   displayMenuItems(menu);
-  const categories = menu.reduce(
-    (values, item) => {
-      if (!values.includes(item.category)) values.push(item.category);
-      return values;
-    },
-    ["all"]
-  );
-  console.log(categories);
-});
-
-filterBtns.forEach((btn) => {
-  btn.addEventListener("click", (event) => {
-    const category = event.currentTarget.dataset.id;
-    const menuCategory = menu.filter((menuItem) => {
-      if (menuItem.category === category) {
-        return menuItem;
-      }
-    });
-    if (category === "all") {
-      displayMenuItems(menu);
-    } else {
-      displayMenuItems(menuCategory);
-    }
-  });
+  displayFilterButtons(menu);
 });
 
 function displayMenuItems(menuItems) {
-  let displayMenu = menuItems.map((item) => {
-    return `<article class="menu-item">
+  let displayMenu = menuItems
+    .map((item) => {
+      return `<article class="menu-item">
           <img src="${item.img}" alt="menu item" class="photo" />
           <div class="item-info">
             <header>
@@ -125,7 +103,41 @@ function displayMenuItems(menuItems) {
             </p>
           </div>
         </article>`;
-  });
-  displayMenu = displayMenu.join("");
+    })
+    .join("");
   sectionCenter.innerHTML = displayMenu;
+}
+
+function displayFilterButtons(menuItems) {
+  const categories = menuItems.reduce(
+    (accumulator, currentValue) => {
+      return !accumulator.includes(currentValue.category)
+        ? [...accumulator, currentValue.category]
+        : [...accumulator];
+    },
+    ["all"]
+  );
+
+  let btnsToDisplay = categories
+    .map((item) => {
+      return `<button class="filter-btn" type="button" data-id="${item}">${item}</button>`;
+    })
+    .join("");
+  btnContainer.innerHTML = btnsToDisplay;
+  const filterBtns = btnContainer.querySelectorAll(".filter-btn");
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      const category = event.currentTarget.dataset.id;
+      const menuCategory = menu.filter((menuItem) => {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+      if (category === "all") {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategory);
+      }
+    });
+  });
 }
